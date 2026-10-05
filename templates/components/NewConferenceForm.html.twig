@@ -1,0 +1,217 @@
+<div {{ attributes }}>
+    <form
+            data-action="live#action:prevent"
+            data-live-action-param="saveConference"
+    >
+        <div class="row align-items-center">
+            <div class="col-3">
+                <label for="conference-name">Conference name:</label>
+            </div>
+            <div class="col-6">
+                <input
+                        type="text"
+                        data-model="name"
+                        class="form-control {{ _errors.has('name') ? 'is-invalid' }}"
+                        id="conference-name"
+                >
+                {% if _errors.has('name') %}
+                    <div class="invalid-feedback">
+                        {{ _errors.get('name') }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row align-items-center mt-3">
+            <div class="col-3">
+                <label for="conference-description">Description:</label>
+            </div>
+            <div class="col-6">
+                <textarea
+                        data-model="description"
+                        class="form-control {{ _errors.has('description') ? 'is-invalid' }}"
+                        id="conference-description"
+                ></textarea>
+                {% if _errors.has('description') %}
+                    <div class="invalid-feedback">
+                        {{ _errors.get('description') }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row align-items-center mt-3">
+            <div class="col-3">
+                <label for="conference-isAccessible" class="form-check-label">Accessible:</label>
+            </div>
+            <div class="col-6">
+                <input
+                        type="checkbox"
+                        data-model="isAccessible"
+                        class="form-check-input {{ _errors.has('isAccessible') ? 'is-invalid' }}"
+                        id="conference-isAccessible"
+                >
+                {% if _errors.has('isAccessible') %}
+                    <div class="invalid-feedback">
+                        {{ _errors.get('isAccessible') }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row align-items-center mt-3">
+            <div class="col-3">
+                <label for="conference-startAt">Start date:</label>
+            </div>
+            <div class="col-6">
+                <input
+                        type="date"
+                        data-model="startAt"
+                        class="form-control {{ _errors.has('startAt') ? 'is-invalid' }}"
+                        id="conference-startAt"
+                >
+                {% if _errors.has('startAt') %}
+                    <div class="invalid-feedback">
+                        {{ _errors.get('startAt') }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row align-items-center mt-3">
+            <div class="col-3">
+                <label for="conference-endAt">End date:</label>
+            </div>
+            <div class="col-6">
+                <input
+                        type="date"
+                        data-model="endAt"
+                        class="form-control {{ _errors.has('endAt') ? 'is-invalid' }}"
+                        id="conference-endAt"
+                >
+                {% if _errors.has('endAt') %}
+                    <div class="invalid-feedback">
+                        {{ _errors.get('endAt') }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row align-items-center mt-3">
+            <div class="col-3">
+                <label for="conference-prerequisites">Prerequisites:</label>
+            </div>
+            <div class="col-6">
+                <textarea
+                        data-model="prerequisites"
+                        class="form-control {{ _errors.has('prerequisites') ? 'is-invalid' }}"
+                        id="conference-prerequisites"
+                ></textarea>
+                {% if _errors.has('prerequisites') %}
+                    <div class="invalid-feedback">
+                        {{ _errors.get('prerequisites') }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row align-items-center mt-3">
+            <div class="col-3">
+                <label for="conference-organizations">Organizations:</label>
+            </div>
+            <div class="col-6">
+                <select
+                        data-model="organizations"
+                        id="conference-organizations"
+                        class="form-control {{ _errors.has('organizations') ? 'is-invalid' }}"
+                        data-skip-morph
+                        multiple
+                        {{ stimulus_controller('symfony/ux-autocomplete/autocomplete', {
+                            url: path('ux_entity_autocomplete', { alias: 'organization' }),
+                        }) }}
+                >
+                    <option value="">Choose an organization</option>
+                    {% for org_option in allOrgs %}
+                        <option value="{{ org_option.id }}" {{ this.isOrgSelected(org_option) ? 'selected' }}>{{ org_option.name }}</option>
+                    {% endfor %}
+                </select>
+                {% if _errors.has('organizations') %}
+                    <div class="invalid-feedback">
+                        {{ _errors.get('organizations') }}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-auto">
+                <div class="form-text">
+                    <a
+                            type="button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#new-org-modal"
+                    >+ Add Organization
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row align-items-center mt-3">
+            <div class="col-3">
+                <label for="conference-tags">Tags:</label>
+            </div>
+            <div class="col-6">
+                <select
+                        data-model="tags"
+                        id="conference-tags"
+                        class="form-control {{ _errors.has('tags') ? 'is-invalid' }}"
+                        data-skip-morph
+                        multiple
+                        {{ stimulus_controller('symfony/ux-autocomplete/autocomplete', {
+                            url: path('ux_entity_autocomplete', { alias: 'tag' }),
+                        }) }}
+                >
+                    <option value="">Choose tags</option>
+                    {% for tag_option in allTags %}
+                        <option value="{{ tag_option.id }}" {{ this.isTagSelected(tag_option) ? 'selected' }}>{{ tag_option.name }}</option>
+                    {% endfor %}
+                </select>
+                {% if _errors.has('tags') %}
+                    <div class="invalid-feedback">
+                        {{ _errors.get('tags') }}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-auto">
+                <div class="form-text">
+                    <a
+                            type="button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#new-tag-modal"
+                    >+ Add Tag
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary">Save Conference</button>
+        </div>
+    </form>
+
+    {% component BootstrapModal with {id: 'new-tag-modal'} %}
+        {% block modal_header %}
+            <h5>Add a Tag</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        {% endblock %}
+        {% block modal_body %}
+            <twig:NewTagForm />
+        {% endblock %}
+    {% endcomponent %}
+    {% component BootstrapModal with {id: 'new-org-modal'} %}
+        {% block modal_header %}
+            <h5>Add an Organization</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        {% endblock %}
+        {% block modal_body %}
+            <twig:NewOrganizationForm />
+        {% endblock %}
+    {% endcomponent %}
+</div>
