@@ -6,14 +6,16 @@ use App\Entity\Conference;
 use App\Entity\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+use Symfony\Component\Security\Core\Role\RoleHierarchyInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class EditionVoter extends Voter
 {
     public const CONFERENCE = 'edit.conference';
 
-    public function __construct(protected readonly Security $security)
+    public function __construct(protected readonly RoleHierarchyInterface $hierarchy)
     {
     }
 
@@ -25,15 +27,14 @@ class EditionVoter extends Voter
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
-        if ($this->security->isGranted('ROLE_WEBSITE')) {
-            return true;
-        }
-
         $user = $token->getUser();
         if (!$user instanceof User) {
             return false;
         }
 
+        if (\in_array('ROLE_WEBSITE', $this->hierarchy->getReachableRoleNames($user->getRoles()), true)) {
+            return true;
+        }
 
         /** @var Conference $subject */
         foreach ($subject->getOrganizations() as $organization) {
