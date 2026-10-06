@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: ConferenceRepository::class)]
 class Conference
 {
-    #[Groups(['Volunteering'])]
+    #[Groups(['conference.get', 'conference.list', 'Volunteering'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -21,38 +21,42 @@ class Conference
 
     #[Assert\Length(min: 10)]
     #[Assert\NotNull()]
-    #[Groups(['Volunteering'])]
+    #[Groups(['conference.get', 'conference.list', 'Volunteering'])]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
     #[Assert\NotNull()]
     #[Assert\Length(min: 30)]
+    #[Groups(['conference.get', 'conference.list', ])]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
     #[Assert\NotNull()]
+    #[Groups(['conference.get', 'conference.list', ])]
     #[ORM\Column]
     private ?bool $accessible = null;
 
     #[Assert\Length(min: 20)]
+    #[Groups(['conference.get', ])]
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $prerequisites = null;
 
     #[Assert\GreaterThan('today')]
     #[Assert\NotNull()]
-    #[Groups(['Volunteering'])]
+    #[Groups(['conference.get', 'conference.list', 'Volunteering'])]
     #[ORM\Column]
     private ?\DateTimeImmutable $startAt = null;
 
     #[Assert\GreaterThan(propertyPath: 'startAt')]
     #[Assert\NotNull()]
-    #[Groups(['Volunteering'])]
+    #[Groups(['conference.get', 'conference.list', 'Volunteering'])]
     #[ORM\Column]
     private ?\DateTimeImmutable $endAt = null;
 
     /**
      * @var Collection<int, Volunteering>
      */
+    #[Groups(['conference.get', ])]
     #[ORM\OneToMany(targetEntity: Volunteering::class, mappedBy: 'conference', orphanRemoval: true)]
     private Collection $volunteerings;
 
@@ -61,22 +65,25 @@ class Conference
      */
     #[Assert\NotNull()]
     #[Assert\Valid()]
-    #[Groups(['Volunteering'])]
+    #[Groups(['conference.get', 'conference.list', 'Volunteering'])]
     #[ORM\ManyToMany(targetEntity: Organization::class, inversedBy: 'conferences')]
     private Collection $organizations;
 
+    #[Groups(['conference.get', 'conference.list', ])]
     #[ORM\ManyToOne(inversedBy: 'conferences')]
     private ?User $createdBy = null;
 
     /**
      * @var Collection<int, Tag>
      */
+    #[Groups(['conference.get', ])]
     #[ORM\ManyToMany(targetEntity: Tag::class)]
     private Collection $tags;
 
     /**
      * @var Collection<int, Skill>
      */
+    #[Groups(['conference.get', ])]
     #[ORM\ManyToMany(targetEntity: Skill::class)]
     private Collection $neededSkills;
 

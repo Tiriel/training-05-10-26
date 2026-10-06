@@ -14,7 +14,7 @@ framework:
                     Accept: 'application/json'
                     apikey: '%env(CONF_API_KEY)%'
 
-    #esi: true
+    esi: true
     #fragments: true
 
 when@test:

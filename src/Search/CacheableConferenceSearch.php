@@ -3,10 +3,12 @@
 namespace App\Search;
 
 use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
+use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
-#[AsDecorator(ConferenceSearchInterface::class)]
+#[When('prod')]
+#[AsDecorator(ConferenceSearchInterface::class, priority: 5)]
 class CacheableConferenceSearch implements ConferenceSearchInterface
 {
     public function __construct(

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\TagRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: TagRepository::class)]
 class Tag
@@ -13,6 +14,7 @@ class Tag
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(["conference.get", "profile.get"])]
     #[ORM\Column(length: 100)]
     private ?string $name = null;
 

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\SkillRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: SkillRepository::class)]
 class Skill
@@ -13,6 +14,7 @@ class Skill
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(["conference.get", "profile.get"])]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 

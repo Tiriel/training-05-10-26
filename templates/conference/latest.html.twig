@@ -1,0 +1,9 @@
+<div>
+    <ul>
+        {% for conf in conferences %}
+            <li>{{ conf.name }}</li>
+        {% else %}
+            <li>No conferences yet.</li>
+        {% endfor %}
+    </ul>
+</div>

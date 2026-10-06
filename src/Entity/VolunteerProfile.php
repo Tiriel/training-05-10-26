@@ -6,17 +6,19 @@ use App\Repository\VolunteerProfileRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Entity(repositoryClass: VolunteerProfileRepository::class)]
 class VolunteerProfile
 {
+    #[Groups(["profile.list", "profile.get"])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Ignore]
+    #[Groups(["profile.list", "profile.get"])]
     #[ORM\OneToOne(inversedBy: 'volunteerProfile', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $forUser = null;
@@ -24,12 +26,14 @@ class VolunteerProfile
     /**
      * @var Collection<int, Skill>
      */
+    #[Groups(["profile.get"])]
     #[ORM\ManyToMany(targetEntity: Skill::class)]
     private Collection $skills;
 
     /**
      * @var Collection<int, Tag>
      */
+    #[Groups(["profile.get"])]
     #[ORM\ManyToMany(targetEntity: Tag::class)]
     private Collection $interests;
 

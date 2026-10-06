@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Form\ConferenceType;
 use App\Matching\Strategy\TagBasedStrategy;
 use App\Message\MatchVolunteerMessage;
+use App\Repository\ConferenceRepository;
 use App\Search\ConferenceSearchInterface;
 use App\Search\DatabaseConferenceSearch;
 use App\Security\Voter\EditionVoter;
@@ -87,6 +88,13 @@ class ConferenceController extends AbstractController
     {
         return $this->render('conference/list.html.twig', [
             'conferences' => $tagStrategy->match($user),
+        ]);
+    }
+
+    public function latest(ConferenceRepository $repository)
+    {
+        return $this->render('conference/latest.html.twig', [
+            'conferences' => $repository->findBy([], ['id' => 'DESC'], 3),
         ]);
     }
 }
