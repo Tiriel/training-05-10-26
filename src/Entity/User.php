@@ -17,13 +17,13 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[Groups(['Volunteering', 'profile.get', 'profile.list'])]
+    #[Groups(['Volunteering', 'profile.get', 'profile.list', 'conference.get', 'conference.list'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['Volunteering', 'profile.get', 'profile.list'])]
+    #[Groups(['Volunteering', 'profile.get', 'profile.list', 'conference.get', 'conference.list'])]
     #[ORM\Column(length: 180)]
     private ?string $email = null;
 
@@ -48,13 +48,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Organization>
      */
-    #[Groups(['Volunteering', 'profile.get'])]
+    #[Groups(['Volunteering', 'profile.get', 'conference.get', 'conference.list'])]
     #[ORM\ManyToMany(targetEntity: Organization::class, inversedBy: 'users')]
     private Collection $organizations;
 
     /**
      * @var Collection<int, Conference>
      */
+    #[Groups(['Volunteering', 'profile.get', 'conference.get', 'conference.list'])]
     #[ORM\OneToMany(targetEntity: Conference::class, mappedBy: 'createdBy')]
     private Collection $conferences;
 

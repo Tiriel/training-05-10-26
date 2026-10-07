@@ -20,9 +20,9 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-#        api:
-#            pattern: ^/api
-#            stateless: true
+        api:
+            pattern: ^/api
+            stateless: true
 #            json_login:
 #                check_path: app_api_login
 #            custom_authenticators:

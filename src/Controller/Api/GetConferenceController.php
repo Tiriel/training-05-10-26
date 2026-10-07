@@ -15,6 +15,9 @@ final class GetConferenceController extends AbstractController
     {
         return $this->json($conference, context: [
             AbstractNormalizer::GROUPS => ['conference.get'],
+            AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => static fn(object $obj) => [
+                'id' => $obj->getId(),
+            ],
         ]);
     }
 }

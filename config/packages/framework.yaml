@@ -2,6 +2,8 @@
 framework:
     secret: '%env(APP_SECRET)%'
     #csrf_protection: true
+    http_cache:
+        enabled: true
 
     # Note that the session will be started ONLY if you read or write from it.
     session: true
@@ -13,6 +15,10 @@ framework:
                 headers:
                     Accept: 'application/json'
                     apikey: '%env(CONF_API_KEY)%'
+                retry_failed:
+                    max_retries: 3
+                    delay: 1000
+                    multiplier: 2
 
     esi: true
     #fragments: true

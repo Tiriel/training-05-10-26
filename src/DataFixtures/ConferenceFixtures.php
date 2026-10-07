@@ -4,10 +4,12 @@ namespace App\DataFixtures;
 
 use App\Entity\Conference;
 use App\Entity\Tag;
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class ConferenceFixtures extends Fixture
+class ConferenceFixtures extends Fixture implements DependentFixtureInterface
 {
     public const SF_LIVE = 'sf_live_';
 
@@ -27,10 +29,19 @@ class ConferenceFixtures extends Fixture
                 $name = TagFixtures::TAGS[$key];
                 $conference->addTag($this->getReference(TagFixtures::TAG_NAME.$name, Tag::class));
             }
+            $conference->setCreatedBy($this->getReference('user', User::class));
 
             $manager->persist($conference);
             $manager->flush();
             $this->addReference(self::SF_LIVE.$i, $conference);
         }
+    }
+
+    public function getDependencies(): array
+    {
+        return [
+            TagFixtures::class,
+            UserFixtures::class,
+        ];
     }
 }

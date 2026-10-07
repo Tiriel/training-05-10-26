@@ -9,19 +9,31 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 final class ProfileController extends AbstractController
 {
     #[Route('/profile', name: 'app_profile')]
-    public function index(#[CurrentUser] User $user, EntityManagerInterface $entityManager): Response
+    public function index(#[CurrentUser] User $user, EntityManagerInterface $entityManager, CacheInterface $cache): Response
     {
         if (!$user->getVolunteerProfile()) {
             $user->setVolunteerProfile((new VolunteerProfile())->setForUser($user));
             $entityManager->flush();
         }
 
+        $key = sprintf("%d-%s", $user->getId(), $user->getVolunteerProfile()->getUpdatedAt()->format('Y-m-d'));
+        $matches = $cache->get($key, function (ItemInterface $item) {
+            if ($item->isHit()) {
+                return $item->get();
+            }
+
+            return [];
+        });
+
         return $this->render('profile/index.html.twig', [
             'user' => $user,
+            'matches' => $matches,
         ]);
     }
 }

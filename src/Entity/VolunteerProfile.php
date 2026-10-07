@@ -37,6 +37,9 @@ class VolunteerProfile
     #[ORM\ManyToMany(targetEntity: Tag::class)]
     private Collection $interests;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
+
     public function __construct()
     {
         $this->skills = new ArrayCollection();
@@ -104,6 +107,18 @@ class VolunteerProfile
     public function removeInterest(Tag $interest): static
     {
         $this->interests->removeElement($interest);
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

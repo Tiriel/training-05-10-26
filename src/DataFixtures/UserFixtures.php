@@ -49,6 +49,8 @@ class UserFixtures extends Fixture
         $user->setPassword($password);
         $manager->persist($user);
 
+        $this->setReference('user', $user);
+
         $manager->flush();
     }
 }
