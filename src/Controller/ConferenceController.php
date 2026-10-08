@@ -8,15 +8,16 @@ use App\Entity\Conference;
 use App\Entity\User;
 use App\Form\ConferenceType;
 use App\FormHandler\ConferenceFormHandler;
-use App\Matching\Strategy\TagBasedStrategy;
 use App\Message\MatchVolunteerMessage;
 use App\Repository\ConferenceRepository;
 use App\Search\ConferenceSearchInterface;
 use App\Search\DatabaseConferenceSearch;
 use App\Security\Voter\EditionVoter;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -67,10 +68,15 @@ class ConferenceController extends AbstractController
     }
 
     #[Route('/conferences/match/{strategy}', name: 'app_conference_match', requirements: ['strategy' => 'tag|skill|location'])]
-    public function match(string $strategy, #[CurrentUser] User $user, TagBasedStrategy $tagStrategy): Response
+    public function match(
+        string $strategy,
+        #[CurrentUser] User $user,
+        #[AutowireLocator('app.matching_strategy', defaultIndexMethod: 'getName')]
+        ContainerInterface $strategies,
+    ): Response
     {
         return $this->render('conference/list.html.twig', [
-            'conferences' => $tagStrategy->match($user),
+            'conferences' => $strategies->get($strategy)->match($user),
         ]);
     }
 

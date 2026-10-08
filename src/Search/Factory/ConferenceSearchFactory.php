@@ -5,23 +5,21 @@ namespace App\Search\Factory;
 use App\Search\Client\ConferenceApiClient;
 use App\Search\ConferenceSearchInterface;
 use App\Search\DatabaseConferenceSearch;
-use Symfony\Component\DependencyInjection\Attribute\Lazy;
+use Psr\Container\ContainerInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 
 class ConferenceSearchFactory
 {
     public function __construct(
-        #[Lazy]
-        private readonly DatabaseConferenceSearch $databaseSearch,
-        #[Lazy]
-        private readonly ConferenceApiClient $client,
+        #[AutowireLocator([
+            'database' => DatabaseConferenceSearch::class,
+            'api' => ConferenceApiClient::class
+        ])]
+        private readonly ContainerInterface $searches
     ) {}
 
     public function create(string $search): ConferenceSearchInterface
     {
-        return match ($search) {
-            'database' => $this->databaseSearch,
-            'api' => $this->client,
-            default => throw new \InvalidArgumentException()
-        };
+        return $this->searches->get($search);
     }
 }

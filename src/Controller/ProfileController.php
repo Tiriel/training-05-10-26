@@ -28,7 +28,6 @@ final class ProfileController extends AbstractController
         }
 
         $key = sprintf("%d-%s", $user->getId(), $user->getVolunteerProfile()->getUpdatedAt()->format('Y-m-d'));
-        // Read-only: only MatchVolunteerMessageHandler writes matches
         $item = $cache->getItem($key);
         $matches = $item->isHit() ? $item->get() : [];
 

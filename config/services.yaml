@@ -32,3 +32,22 @@ services:
         factory: ['@App\Search\Factory\ConferenceSearchFactory', 'create']
         arguments:
             $search: '%env(SEARCH_TYPE)%'
+
+    app.ranking_strategy.weighted:
+        class: 'App\Ranking\Strategies\AbstractRankingStrategy'
+        abstract: true
+        arguments:
+            $weight: 1
+
+    App\Ranking\Strategies\TagRanking:
+        parent: app.ranking_strategy.weighted
+        arguments:
+            $weight: 3
+
+    App\Ranking\Strategies\SkillRanking:
+        parent: app.ranking_strategy.weighted
+        arguments:
+            $weight: 2
+
+    App\Ranking\Strategies\UpcomingDateRanking:
+        parent: app.ranking_strategy.weighted

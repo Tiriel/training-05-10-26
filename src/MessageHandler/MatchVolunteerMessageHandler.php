@@ -5,6 +5,7 @@ namespace App\MessageHandler;
 use App\Matching\Strategy\MatchingStrategyInterface;
 use App\Matching\Strategy\TagBasedStrategy;
 use App\Message\MatchVolunteerMessage;
+use App\Ranking\RankingHandler;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
@@ -21,6 +22,7 @@ final class MatchVolunteerMessageHandler{
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly EntityManagerInterface $entityManager,
+        private readonly RankingHandler $rankingHandler,
         #[Target('volunteer.matches.cache')]
         private readonly TagAwareCacheInterface $cache,
         #[AutowireIterator(tag: 'app.matching_strategy', defaultIndexMethod: 'getName')]
@@ -53,8 +55,8 @@ final class MatchVolunteerMessageHandler{
                 $matches = [...$matches, ...$strategy->match($user)];
             }
 
-            return $matches;
-        }, INF);
+            return $this->rankingHandler->rank($user, $matches);
+        });
 
         dump(
             sprintf("Matched user with id %d", $user->getId()),
