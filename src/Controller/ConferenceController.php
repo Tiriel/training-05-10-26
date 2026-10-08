@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Entity\Conference;
 use App\Entity\User;
 use App\Form\ConferenceType;
+use App\FormHandler\ConferenceFormHandler;
 use App\Matching\Strategy\TagBasedStrategy;
 use App\Message\MatchVolunteerMessage;
 use App\Repository\ConferenceRepository;
@@ -29,7 +30,7 @@ class ConferenceController extends AbstractController
     //#[IsGranted(new Expression('is_granted("ROLE_ORGANIZER") or is_granted("ROLE_WEBSITE")'))]
     #[Route('/conference/new', name: 'app_conference_new', methods: ['GET', 'POST'])]
     #[Route('/conference/{id<\d+>}/edit', name: 'app_conference_edit', methods: ['GET', 'POST'])]
-    public function newConference(?Conference $conference, Request $request, EntityManagerInterface $manager): Response
+    public function save(?Conference $conference, Request $request, ConferenceFormHandler $handler): Response
     {
         // Possible solution to SF_ADVANCED exercise 14
         //if (!$this->isGranted('ROLE_ORGANIZER') && !$this->isGranted('ROLE_WEBSITE')) {
@@ -39,25 +40,7 @@ class ConferenceController extends AbstractController
             $this->denyAccessUnlessGranted(EditionVoter::CONFERENCE, $conference);
         }
 
-        $conference ??= new Conference();
-        $form = $this->createForm(ConferenceType::class, $conference);
-
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            if (!$conference->getId()) {
-                $conference->setCreatedBy($this->getUser());
-            }
-
-            $manager->persist($conference);
-            $manager->flush();
-
-            return $this->redirectToRoute('app_conference_show', ['id' => $conference->getId()]);
-        }
-
-        return $this->render('conference/new.html.twig', [
-            'form' => $form,
-            'conference' => $conference,
-        ]);
+        return $handler->handle($request, $conference ??= new Conference());
     }
 
     #[Route('/conference', name: 'app_conference_list', methods: ['GET'])]

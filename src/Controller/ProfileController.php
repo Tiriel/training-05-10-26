@@ -8,14 +8,19 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
-use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 final class ProfileController extends AbstractController
 {
     #[Route('/profile', name: 'app_profile')]
-    public function index(#[CurrentUser] User $user, EntityManagerInterface $entityManager, CacheInterface $cache): Response
+    public function index(
+        #[CurrentUser] User $user,
+        EntityManagerInterface $entityManager,
+        #[Target('volunteer.matches.cache')]
+        TagAwareCacheInterface $cache,
+    ): Response
     {
         if (!$user->getVolunteerProfile()) {
             $user->setVolunteerProfile((new VolunteerProfile())->setForUser($user));
@@ -23,13 +28,7 @@ final class ProfileController extends AbstractController
         }
 
         $key = sprintf("%d-%s", $user->getId(), $user->getVolunteerProfile()->getUpdatedAt()->format('Y-m-d'));
-        $matches = $cache->get($key, function (ItemInterface $item) {
-            if ($item->isHit()) {
-                return $item->get();
-            }
-
-            return [];
-        });
+        $matches = $cache->get($key, static fn (): array => []);
 
         return $this->render('profile/index.html.twig', [
             'user' => $user,

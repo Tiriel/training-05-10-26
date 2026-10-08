@@ -44,6 +44,7 @@ class VolunteerProfile
     {
         $this->skills = new ArrayCollection();
         $this->interests = new ArrayCollection();
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
