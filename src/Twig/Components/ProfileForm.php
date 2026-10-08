@@ -10,6 +10,7 @@ use App\Message\MatchVolunteerMessage;
 use Cassandra\Type\UserType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -22,6 +23,7 @@ use Symfony\UX\LiveComponent\ComponentWithFormTrait;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 use Symfony\UX\LiveComponent\ValidatableComponentTrait;
 use Symfony\UX\TwigComponent\Attribute\ExposeInTemplate;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[AsLiveComponent]
 final class ProfileForm extends AbstractController
@@ -40,6 +42,8 @@ final class ProfileForm extends AbstractController
 
     public function __construct(
         private readonly EntityManagerInterface $manager,
+        #[Target('volunteer.matches.cache')]
+        private readonly TagAwareCacheInterface $cache,
     ) {}
 
     #[LiveListener('tag:created')]
@@ -67,6 +71,11 @@ final class ProfileForm extends AbstractController
         $this->isEditing = false;
         $manager->persist($this->profile);
         $manager->flush();
+        $this->cache->delete(sprintf(
+            '%d-%s',
+            $this->profile->getForUser()->getId(),
+            $this->profile->getUpdatedAt()->format('Y-m-d'),
+        ));
         $bus->dispatch(new MatchVolunteerMessage($this->profile->getForUser()->getId()));
         $this->addFlash('success', 'Profile saved.');
 

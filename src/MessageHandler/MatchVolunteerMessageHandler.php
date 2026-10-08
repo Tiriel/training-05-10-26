@@ -46,7 +46,6 @@ final class MatchVolunteerMessageHandler{
             $user->getId(),
             $user->getVolunteerProfile()->getUpdatedAt()->format('Y-m-d')
         );
-        // INF forces a recompute: a same-day re-match must replace the previous entry
         $matches = $this->cache->get($key, function (ItemInterface $item) use ($user): array {
             $item->tag(['app.volunteer.matches']);
 
