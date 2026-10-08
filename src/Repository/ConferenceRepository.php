@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\Conference;
-use App\Entity\Organization;
 use App\Entity\Skill;
 use App\Entity\Tag;
 use App\Entity\User;
@@ -32,9 +31,9 @@ class ConferenceRepository extends ServiceEntityRepository
 
         if (\count($orgIds) > 0) {
             $qb
-                ->innerJoin(Organization::class, 'o')
-                ->andWhere($qb->expr()->notIn('o.id', ':ids'))
-                ->setParameter('ids', implode(', ', $orgIds));
+                ->innerJoin('c.organizations', 'o')
+                ->andWhere($qb->expr()->in('o.id', ':ids'))
+                ->setParameter('ids', $orgIds);
         }
 
         return $qb

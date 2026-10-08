@@ -27,3 +27,8 @@ services:
 
     App\Search\DatabaseConferenceSearch:
         configurator: ['@App\Search\Configurator\DatabaseSearchConfigurator', 'configure']
+
+    App\Search\ConferenceSearchInterface:
+        factory: ['@App\Search\Factory\ConferenceSearchFactory', 'create']
+        arguments:
+            $search: '%env(SEARCH_TYPE)%'

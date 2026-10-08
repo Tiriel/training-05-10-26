@@ -25,6 +25,7 @@ class DatabaseSearchConfigurator
             $orgIds = $user
                 ->getOrganizations()
                 ->map(fn (Organization $org) => $org->getId())
+                ->toArray()
                 ;
         }
 
