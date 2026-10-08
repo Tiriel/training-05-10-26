@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Conference;
+use App\Entity\Organization;
 use App\Entity\Skill;
 use App\Entity\Tag;
 use App\Entity\User;
@@ -17,6 +18,30 @@ class ConferenceRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Conference::class);
+    }
+
+    public function getForNameWithOrgAndMaxResults(array $orgIds, int $maxResults, ?string $name): array
+    {
+        $qb = $this->createQueryBuilder('c');
+
+        if (\is_string($name)) {
+            $qb
+                ->andWhere($qb->expr()->like('c.name', ':name'))
+                ->setParameter('name', '%' . $name . '%');
+        }
+
+        if (\count($orgIds) > 0) {
+            $qb
+                ->innerJoin(Organization::class, 'o')
+                ->andWhere($qb->expr()->notIn('o.id', ':ids'))
+                ->setParameter('ids', implode(', ', $orgIds));
+        }
+
+        return $qb
+            ->setMaxResults($maxResults)
+            ->getQuery()
+            ->getResult();
+
     }
 
     /**

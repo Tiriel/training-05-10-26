@@ -6,11 +6,13 @@ use App\Entity\Tag;
 use App\Entity\User;
 use App\Entity\VolunteerProfile;
 use App\Form\VolunteerProfileType;
+use App\Message\MatchVolunteerMessage;
 use Cassandra\Type\UserType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\Attribute\LiveArg;
@@ -58,13 +60,14 @@ final class ProfileForm extends AbstractController
     }
 
     #[LiveAction]
-    public function save(EntityManagerInterface $manager): RedirectResponse
+    public function save(EntityManagerInterface $manager, MessageBusInterface $bus): RedirectResponse
     {
         $this->submitForm();
 
         $this->isEditing = false;
         $manager->persist($this->profile);
         $manager->flush();
+        $bus->dispatch(new MatchVolunteerMessage($this->profile->getForUser()->getId()));
         $this->addFlash('success', 'Profile saved.');
 
         return $this->redirectToRoute('app_profile');
